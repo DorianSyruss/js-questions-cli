@@ -1,0 +1,18 @@
+
+# deps
+node_modules
+
+# logs
+logs
+*.log
+npm-debug.log*
+
+# private stuff
+credentials.json
+
+# editors
+.idea
+*.sublime-*
+
+# general
+.DS_Store
