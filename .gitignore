@@ -12,6 +12,7 @@ credentials.json
 
 # editors
 .idea
+launch.json
 *.sublime-*
 
 # general
