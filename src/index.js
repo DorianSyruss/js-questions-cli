@@ -1,14 +1,15 @@
-const got = require('got');
-const md = require('remarked');
 const cheerio = require('cheerio');
 const filter = require('lodash/filter');
+const got = require('got');
+const inquirer = require('inquirer');
 const isEmpty = require('lodash/isEmpty');
+const md = require('remarked');
 
 const quizUrl = 'https://raw.githubusercontent.com/DorianSyruss/javascript-questions/master/README.md';
 const questionKeys = {
   h6: 'questionText',
   pre: 'codeExample',
-  ul: 'answer',
+  ul: 'choices',
   details: 'feedback'
 };
 
@@ -27,10 +28,16 @@ function parseQuestion($, question) {
   question.each((_, questionProp) => {
     const { tagName } = questionProp;
     const key = questionKeys[tagName];
-    const value = $(questionProp).text();
+    let value = $(questionProp).text();
+    if (key === questionKeys.ul) value = parseChoices(questionProp);
     parsedQuestion[key] = value;
   });
   return parsedQuestion;
+}
+
+function parseChoices(questionChoices) {
+  const $ = cheerio.load(questionChoices);
+  return $('li').map((_, el) => $(el).text()).get();
 }
 
 (async () => {
@@ -42,8 +49,21 @@ function parseQuestion($, question) {
 
     const questions = getQuestions($);
     const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-    console.log(randomQuestion);
+
+    inquirer.prompt([{
+      type: 'list',
+      name: 'Choice',
+      message: randomQuestion.questionText,
+      choices: randomQuestion.choices
+    }])
+      .then(answer => {
+        console.log(JSON.stringify(answer, null, '  '));
+      });
   } catch (error) {
     console.log(error);
   }
+})();
+
+(async () => {
+  // => response => { username, age, about }
 })();

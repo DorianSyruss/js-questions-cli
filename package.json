@@ -35,6 +35,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "got": "^9.6.0",
+    "inquirer": "^7.0.0",
     "remarked": "^0.1.4"
   }
 }
