@@ -48,16 +48,21 @@ function parseChoices(questionChoices) {
     const $ = cheerio.load(quizHtml);
 
     const questions = getQuestions($);
-    const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+    const {
+      choices,
+      questionText,
+      codeExample = '',
+      feedback
+    } = questions[Math.floor(Math.random() * questions.length)];
 
     inquirer.prompt([{
       type: 'list',
-      name: 'Choice',
-      message: randomQuestion.questionText,
-      choices: randomQuestion.choices
+      name: 'CHOICE',
+      message: `${questionText}\n\n${codeExample}\n`,
+      choices: choices
     }])
       .then(answer => {
-        console.log(JSON.stringify(answer, null, '  '));
+        console.log(`${answer.CHOICE}\n${feedback}`);
       });
   } catch (error) {
     console.log(error);
