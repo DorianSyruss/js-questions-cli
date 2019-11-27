@@ -1,5 +1,5 @@
 {
-  "name": "js-quiz-cli",
+  "name": "js-questions-cli",
   "version": "1.0.0",
   "description": "Scraped js questions to CLI",
   "main": "index.js",
