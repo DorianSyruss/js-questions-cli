@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 const cheerio = require('cheerio');
-const filter = require('lodash/filter');
+const filter = require('lodash.filter');
 const got = require('got');
 const inquirer = require('inquirer');
-const isEmpty = require('lodash/isEmpty');
+const isEmpty = require('lodash.isempty');
 const md = require('remarked');
 const Rx = require('rxjs');
 

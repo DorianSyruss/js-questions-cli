@@ -37,6 +37,8 @@
     "cheerio": "^1.0.0-rc.3",
     "got": "^9.6.0",
     "inquirer": "^7.0.0",
+    "lodash.filter": "^4.6.0",
+    "lodash.isempty": "^4.4.0",
     "remarked": "^0.1.4",
     "rxjs": "^6.5.3"
   }
