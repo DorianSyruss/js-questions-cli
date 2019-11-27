@@ -6,5 +6,5 @@ It scrapes "javascript-questions" project from "lydiahallie". (https://github.co
 One-time run:
 
 ```
-  $ npx haikuist
+  $ npx js-questions-cli
 ```
