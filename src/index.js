@@ -4,6 +4,7 @@ const got = require('got');
 const inquirer = require('inquirer');
 const isEmpty = require('lodash/isEmpty');
 const md = require('remarked');
+const Rx = require('rxjs');
 
 const quizUrl = 'https://raw.githubusercontent.com/DorianSyruss/javascript-questions/master/README.md';
 const questionKeys = {
@@ -40,6 +41,25 @@ function parseChoices(questionChoices) {
   return $('li').map((_, el) => $(el).text()).get();
 }
 
+function getQuestionPrompt(questions) {
+  const { questionText, codeExample, choices, feedback = '' } = sample(questions);
+  return {
+    type: 'list',
+    name: 'CHOICE',
+    message: `${questionText}\n\n${codeExample}\n`,
+    choices,
+    suffix: 'Your choice is',
+    filter: () => feedback
+  };
+}
+
+const CONTINUE_PROMPT = {
+  type: 'confirm',
+  name: 'CONTINUE',
+  message: `Do you want to continue`,
+  default: true
+};
+
 (async () => {
   try {
     const response = await got(quizUrl);
@@ -48,27 +68,25 @@ function parseChoices(questionChoices) {
     const $ = cheerio.load(quizHtml);
 
     const questions = getQuestions($);
-    const {
-      choices,
-      questionText,
-      codeExample = '',
-      feedback
-    } = questions[Math.floor(Math.random() * questions.length)];
 
-    inquirer.prompt([{
-      type: 'list',
-      name: 'CHOICE',
-      message: `${questionText}\n\n${codeExample}\n`,
-      choices: choices
-    }])
-      .then(answer => {
-        console.log(`${answer.CHOICE}\n${feedback}`);
-      });
+    const prompts = new Rx.Subject();
+    const prompt = inquirer.prompt(prompts);
+
+    prompts.next(getQuestionPrompt(questions));
+
+    const onEachAnswer = (prevPrompt) => {
+      console.info(prevPrompt.answer);
+      if (prevPrompt.name !== CONTINUE_PROMPT.name) return prompts.next(CONTINUE_PROMPT);
+      return !prevPrompt.answer
+        ? prompts.complete()
+        : prompts.next(getQuestionPrompt(questions));
+    };
+    prompt.ui.process.subscribe(onEachAnswer);
   } catch (error) {
     console.log(error);
   }
 })();
 
-(async () => {
-  // => response => { username, age, about }
-})();
+function sample(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
