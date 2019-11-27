@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const cheerio = require('cheerio');
 const filter = require('lodash/filter');
 const got = require('got');
