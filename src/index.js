@@ -42,6 +42,7 @@ function parseChoices(questionChoices) {
 }
 
 function getQuestionPrompt(questions) {
+  console.clear();
   const { questionText, codeExample, choices, feedback = '' } = sample(questions);
   return {
     type: 'list',
@@ -51,6 +52,12 @@ function getQuestionPrompt(questions) {
     suffix: 'Your choice is',
     filter: () => feedback
   };
+}
+
+function exitQuiz(prompts) {
+  const footer = new inquirer.ui.BottomBar();
+  footer.updateBottomBar('Thx for using, bye, bye! :)');
+  return prompts.complete();
 }
 
 const CONTINUE_PROMPT = {
@@ -78,7 +85,7 @@ const CONTINUE_PROMPT = {
       console.info(prevPrompt.answer);
       if (prevPrompt.name !== CONTINUE_PROMPT.name) return prompts.next(CONTINUE_PROMPT);
       return !prevPrompt.answer
-        ? prompts.complete()
+        ? exitQuiz(prompts)
         : prompts.next(getQuestionPrompt(questions));
     };
     prompt.ui.process.subscribe(onEachAnswer);
