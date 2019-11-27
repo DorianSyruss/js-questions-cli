@@ -56,7 +56,7 @@ function getQuestionPrompt(questions) {
 const CONTINUE_PROMPT = {
   type: 'confirm',
   name: 'CONTINUE',
-  message: `Do you want to continue`,
+  message: `Do you want to continue?`,
   default: true
 };
 
@@ -88,5 +88,6 @@ const CONTINUE_PROMPT = {
 })();
 
 function sample(array) {
-  return array[Math.floor(Math.random() * array.length)];
+  const randomIndex = Math.floor(Math.random() * array.length);
+  return array.splice(randomIndex, 1)[0] || {};
 }
