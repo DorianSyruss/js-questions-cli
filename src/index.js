@@ -6,7 +6,7 @@ const isEmpty = require('lodash/isEmpty');
 const md = require('remarked');
 const Rx = require('rxjs');
 
-const quizUrl = 'https://raw.githubusercontent.com/DorianSyruss/javascript-questions/master/README.md';
+const quizUrl = 'https://raw.githubusercontent.com/lydiahallie/javascript-questions/master/en-EN/README.md';
 const questionKeys = {
   h6: 'questionText',
   pre: 'codeExample',
