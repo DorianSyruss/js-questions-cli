@@ -17,7 +17,9 @@
     "quiz",
     "javascript"
   ],
-  "bin": "./src/index.js",
+  "bin": {
+    "jsme": "./src/index.js"
+  },
   "author": "DorianSyruss",
   "license": "ISC",
   "bugs": {
