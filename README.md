@@ -6,7 +6,7 @@ It scrapes "javascript-questions" project from "lydiahallie". (https://github.co
 ## Installation:
 
 ```
-  $ npm install -g js-questions-cli
+$ npm install -g js-questions-cli
 ```
 
 ## Usage
@@ -17,5 +17,5 @@ $ jsme
 ### One-time run:
 
 ```
-  $ npx js-questions-cli
+$ npx js-questions-cli
 ```
