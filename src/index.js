@@ -45,7 +45,10 @@ function parseChoices(questionChoices) {
 
 function getQuestionPrompt(questions) {
   console.clear();
-  const { questionText, codeExample, choices, feedback = '' } = sample(questions);
+  const {
+    questionText = '', codeExample = '', choices = [], feedback = ''
+  } = sample(questions);
+
   return {
     type: 'list',
     name: 'CHOICE',
