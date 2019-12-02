@@ -1,6 +1,6 @@
 {
   "name": "js-questions-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Scraped js questions to CLI",
   "main": "index.js",
   "scripts": {
