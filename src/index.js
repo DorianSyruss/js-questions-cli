@@ -55,7 +55,10 @@ function getQuestionPrompt(questions) {
     message: `${questionText}\n\n${codeExample}\n`,
     choices,
     suffix: 'Your choice is',
-    filter: () => feedback
+    filter: () => {
+      const available = choices.map(choice => `${choice}\n`).join('');
+      return `\nAvailable choices were:\n${available}\n${feedback}`;
+    }
   };
 }
 
