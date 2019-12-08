@@ -2,38 +2,33 @@
   "name": "js-questions-cli",
   "version": "1.0.3",
   "description": "Scraped js questions to CLI",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/DorianSyruss/js-quiz-cli.git"
-  },
   "keywords": [
-    "JS",
+    "cli",
+    "javascript",
+    "js",
     "questions",
-    "CLI",
-    "quiz",
-    "javascript"
+    "quiz"
   ],
-  "bin": {
-    "jsme": "./src/index.js"
-  },
-  "author": "DorianSyruss",
-  "license": "ISC",
+  "homepage": "https://github.com/DorianSyruss/js-quiz-cli#readme",
   "bugs": {
     "url": "https://github.com/DorianSyruss/js-quiz-cli/issues"
   },
-  "homepage": "https://github.com/DorianSyruss/js-quiz-cli#readme",
-  "devDependencies": {
-    "eslint": "^6.2.0",
-    "eslint-config-semistandard": "^15.0.0",
-    "eslint-config-standard": "^13.0.1",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^9.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.0"
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/DorianSyruss/js-quiz-cli.git"
+  },
+  "license": "ISC",
+  "author": "DorianSyruss",
+  "files": [
+    "src"
+  ],
+  "main": "src/index.js",
+  "bin": {
+    "jsme": "src/index.js"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
@@ -43,5 +38,14 @@
     "lodash.isempty": "^4.4.0",
     "remarked": "^0.1.4",
     "rxjs": "^6.5.3"
+  },
+  "devDependencies": {
+    "eslint": "^6.2.0",
+    "eslint-config-semistandard": "^15.0.0",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0"
   }
 }
