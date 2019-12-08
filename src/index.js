@@ -71,7 +71,7 @@ function exitQuiz(prompts) {
 const CONTINUE_PROMPT = {
   type: 'confirm',
   name: 'CONTINUE',
-  message: `Do you want to continue?`,
+  message: 'Do you want to continue?',
   default: true
 };
 
