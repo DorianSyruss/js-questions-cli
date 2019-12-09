@@ -139,7 +139,8 @@ function stringify() {
     },
     html(node) {
       if (!node.value.startsWith('<img')) {
-        return html.call(this, node);
+        return html.call(this, node)
+          .replace(/<br\s?\/?>/ig, lineFeed);
       }
       const fragment = parseHtml(node.value, { fragment: true });
       const [img] = fragment.children;
