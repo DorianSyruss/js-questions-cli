@@ -9,13 +9,13 @@
     "questions",
     "quiz"
   ],
-  "homepage": "https://github.com/DorianSyruss/js-quiz-cli#readme",
+  "homepage": "https://github.com/DorianSyruss/js-questions-cli#readme",
   "bugs": {
-    "url": "https://github.com/DorianSyruss/js-quiz-cli/issues"
+    "url": "https://github.com/DorianSyruss/js-questions-cli/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/DorianSyruss/js-quiz-cli.git"
+    "url": "git://github.com/DorianSyruss/js-questions-cli.git"
   },
   "license": "MIT",
   "author": "DorianSyruss",
