@@ -141,7 +141,7 @@ function stringify() {
       if (!node.value.startsWith('<img')) {
         return html.call(this, node);
       }
-      const fragment = rehype({ fragment: true }).parse(node.value);
+      const fragment = parseHtml(node.value, { fragment: true });
       const [img] = fragment.children;
       return format('<%s>', img.properties.src);
     },
@@ -174,7 +174,7 @@ function exitQuiz() {
 
     const resp = await client.get('en-EN/README.md');
     const mdtext = await resp.text();
-    const mdtree = remark().parse(mdtext);
+    const mdtree = parseMarkdown(mdtext);
     const questions = getQuestions(mdtree);
 
     const prompts = new Subject();
@@ -196,16 +196,16 @@ function exitQuiz() {
   }
 })();
 
-function remark(options = {}) {
-  return unified()
-    .use(require('remark-parse'), options)
-    .freeze();
-}
-
-function rehype(options = {}) {
+function parseHtml(text, options = {}) {
   return unified()
     .use(require('rehype-parse'), options)
-    .freeze();
+    .parse(text);
+}
+
+function parseMarkdown(text, options = {}) {
+  return unified()
+    .use(require('remark-parse'), options)
+    .parse(text);
 }
 
 function sample(array) {
