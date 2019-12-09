@@ -6,7 +6,7 @@ const cardinal = require('cardinal');
 const chalk = require('chalk');
 const exitHook = require('exit-hook');
 const { format } = require('util');
-const got = require('got').extend({ prefixUrl });
+const client = require('ky-universal').extend({ prefixUrl });
 const inquirer = require('inquirer');
 const { Subject } = require('rxjs');
 const unified = require('unified');
@@ -172,8 +172,9 @@ function exitQuiz() {
   try {
     exitHook(() => exitQuiz());
 
-    const { body } = await got('en-EN/README.md');
-    const mdtree = remark().parse(body);
+    const resp = await client.get('en-EN/README.md');
+    const mdtext = await resp.text();
+    const mdtree = remark().parse(mdtext);
     const questions = getQuestions(mdtree);
 
     const prompts = new Subject();
