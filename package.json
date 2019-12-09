@@ -37,7 +37,6 @@
   "dependencies": {
     "cardinal": "^2.1.1",
     "chalk": "^3.0.0",
-    "dedent": "^0.7.0",
     "exit-hook": "^2.2.0",
     "got": "^10.0.2",
     "inquirer": "^7.0.0",
