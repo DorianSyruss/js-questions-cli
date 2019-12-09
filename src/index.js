@@ -129,7 +129,7 @@ function stringify() {
     },
     heading(node) {
       const content = this.all(node).join('');
-      if (node.depth === 4 && content.startsWith('Answer:')) {
+      if (content.startsWith('Answer:')) {
         return chalk.bold.green(content.replace(/^Answer:/, 'Correct answer:'));
       }
       if (/^\d+\./.test(content)) {
@@ -151,7 +151,7 @@ function stringify() {
     },
     listItem(node) {
       const values = node.children.map(child => this.visit(child, node));
-      return values.join('\n');
+      return values.join(lineFeed);
     },
     strong(node) {
       const content = this.all(node).join('');
