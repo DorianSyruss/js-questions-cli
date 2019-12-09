@@ -30,14 +30,22 @@
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "config": {
+    "prefixUrl": "https://raw.githubusercontent.com/lydiahallie/javascript-questions/master/"
+  },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
-    "got": "^9.6.0",
+    "cardinal": "^2.1.1",
+    "chalk": "^3.0.0",
+    "dedent": "^0.7.0",
+    "exit-hook": "^2.2.0",
+    "got": "^10.0.2",
     "inquirer": "^7.0.0",
-    "lodash.filter": "^4.6.0",
-    "lodash.isempty": "^4.4.0",
-    "remarked": "^0.1.4",
-    "rxjs": "^6.5.3"
+    "rehype-parse": "^6.0.2",
+    "remark-parse": "^7.0.2",
+    "remark-stringify": "^7.0.4",
+    "rxjs": "^6.5.3",
+    "unified": "^8.4.2",
+    "wrap-ansi": "^6.2.0"
   },
   "devDependencies": {
     "eslint": "^6.7.2",

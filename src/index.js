@@ -1,108 +1,222 @@
 #!/usr/bin/env node
 
-const cheerio = require('cheerio');
-const filter = require('lodash.filter');
-const got = require('got');
+const { prefixUrl } = require('../package.json').config;
+
+const cardinal = require('cardinal');
+const chalk = require('chalk');
+const exitHook = require('exit-hook');
+const { format } = require('util');
+const got = require('got').extend({ prefixUrl });
 const inquirer = require('inquirer');
-const isEmpty = require('lodash.isempty');
-const md = require('remarked');
-const Rx = require('rxjs');
+const { Subject } = require('rxjs');
+const unified = require('unified');
+const wrapAnsi = require('wrap-ansi');
 
-const quizUrl = 'https://raw.githubusercontent.com/lydiahallie/javascript-questions/master/en-EN/README.md';
-const questionKeys = {
-  h6: 'questionText',
-  pre: 'codeExample',
-  ul: 'choices',
-  details: 'feedback'
-};
+const space = ' ';
+const tab = '\t';
+const lineFeed = '\n';
+const blank = lineFeed + lineFeed;
 
-function getQuestions($) {
-  const questions = [];
-  $('hr').map((_, el) => $(el).nextUntil('hr'))
-    .each((_, question) => {
-      const parsedQuestion = parseQuestion($, question);
-      questions.push(parsedQuestion);
-    });
-  return filter(questions, it => !isEmpty(it));
-}
+const supportsEmoji = process.platform !== 'win32' &&
+  process.env.TERM === 'xterm-256color';
 
-function parseQuestion($, question) {
-  const parsedQuestion = {};
-  question.each((_, questionProp) => {
-    const { tagName } = questionProp;
-    const key = questionKeys[tagName];
-    let value = $(questionProp).text();
-    if (key === questionKeys.ul) value = parseChoices(questionProp);
-    parsedQuestion[key] = value;
-  });
-  return parsedQuestion;
-}
-
-function parseChoices(questionChoices) {
-  const $ = cheerio.load(questionChoices);
-  return $('li').map((_, el) => $(el).text()).get();
-}
-
-function getQuestionPrompt(questions) {
-  console.clear();
-  const {
-    questionText = '', codeExample = '', choices = [], feedback = ''
-  } = sample(questions);
-
-  return {
-    type: 'list',
-    name: 'CHOICE',
-    message: `${questionText}\n\n${codeExample}\n`,
-    choices,
-    suffix: 'Your choice is',
-    filter: () => {
-      const available = choices.map(choice => `${choice}\n`).join('');
-      return `\nAvailable choices were:\n${available}\n${feedback}`;
-    }
-  };
-}
-
-function exitQuiz(prompts) {
-  const footer = new inquirer.ui.BottomBar();
-  footer.updateBottomBar('Thx for using, bye, bye! :)');
-  return prompts.complete();
-}
-
-const CONTINUE_PROMPT = {
+const continuePrompt = {
   type: 'confirm',
-  name: 'CONTINUE',
+  name: '\0continue',
   message: 'Do you want to continue?',
   default: true
 };
 
+class QuestionPrompt extends inquirer.prompt.prompts.list {
+  static type() {
+    return 'question';
+  }
+
+  getQuestion() {
+    const { message, prefix, suffix } = this.opt;
+    return [
+      prefix + chalk.reset() + space + message,
+      space,
+      suffix + space
+    ].join(lineFeed);
+  }
+}
+inquirer.registerPrompt(QuestionPrompt.type, QuestionPrompt);
+
+function getQuestions(mdtree) {
+  const delimiters = mdtree.children.filter(node => node.type === 'thematicBreak');
+  return delimiters.reduce((acc, currentDelimiter, index, arr) => {
+    const nextDelimiter = arr[index + 1];
+    const startIndex = mdtree.children.indexOf(currentDelimiter) + 1;
+    const endIndex = nextDelimiter ? mdtree.children.indexOf(nextDelimiter) : undefined;
+    const questionNodes = mdtree.children.slice(startIndex, endIndex);
+    const parsedQuestion = parseQuestion(questionNodes);
+    acc.push(parsedQuestion);
+    return acc;
+  }, []);
+}
+
+function parseQuestion(questionNodes) {
+  const heading = questionNodes.find(node => node.type === 'heading');
+  const code = questionNodes.find(node => node.type === 'code', questionNodes.indexOf(heading));
+  const list = questionNodes.find(node => node.type === 'list', questionNodes.indexOf(code));
+
+  const detailsStart = questionNodes.find(node => {
+    return node.type === 'html' && node.value.startsWith('<details>');
+  }, questionNodes.indexOf(list));
+  const detailsEnd = questionNodes.find(node => {
+    return node.type === 'html' && node.value.endsWith('</details>');
+  }, questionNodes.indexOf(detailsStart));
+  const details = questionNodes.slice(
+    questionNodes.indexOf(detailsStart) + 1,
+    questionNodes.indexOf(detailsEnd)
+  );
+
+  const questionText = toString(heading);
+  const codeExample = code ? toString(code) : '';
+  const choices = list.children.map(node => toString(node));
+  const feedback = details.map(node => toString(node)).join(blank);
+  return { questionText, codeExample, choices, feedback };
+}
+
+function getQuestionPrompt(questions) {
+  const {
+    index,
+    questionText = '',
+    codeExample = '',
+    choices = [],
+    feedback = ''
+  } = sample(questions);
+
+  const message = [
+    wrapAnsi(questionText, 80),
+    codeExample && space,
+    codeExample && codeExample
+  ].filter(Boolean).join(lineFeed);
+
+  console.clear();
+  return {
+    type: QuestionPrompt.type,
+    name: format('question:%d', index),
+    message,
+    choices,
+    suffix: 'Your choice is',
+    filter() {
+      const output = [
+        lineFeed + 'Available choices were:',
+        choices.join(lineFeed),
+        feedback + lineFeed
+      ].join(blank);
+      return wrapAnsi(output, 80);
+    }
+  };
+}
+
+function stringify() {
+  const { visitors } = this.Compiler.prototype;
+  const { html, inlineCode } = visitors;
+  Object.assign(visitors, {
+    code(node) {
+      const content = node.value.replace(new RegExp(tab, 'g'), space + space);
+      if (node.lang !== 'javascript' && node.lang !== 'js') {
+        return content;
+      }
+      return cardinal.highlight(content);
+    },
+    emphasis(node) {
+      const content = this.all(node).join('');
+      return chalk.italic(content);
+    },
+    heading(node) {
+      const content = this.all(node).join('');
+      if (node.depth === 4 && content.startsWith('Answer:')) {
+        return chalk.bold.green(content.replace(/^Answer:/, 'Correct answer:'));
+      }
+      if (/^\d+\./.test(content)) {
+        return chalk.underline(content);
+      }
+      return content;
+    },
+    html(node) {
+      if (!node.value.startsWith('<img')) {
+        return html.call(this, node);
+      }
+      const fragment = rehype({ fragment: true }).parse(node.value);
+      const [img] = fragment.children;
+      return format('<%s>', img.properties.src);
+    },
+    inlineCode(node) {
+      const value = inlineCode.call(this, node);
+      return chalk.yellow(value.slice(1, -1));
+    },
+    listItem(node) {
+      const values = node.children.map(child => this.visit(child, node));
+      return values.join('\n');
+    },
+    strong(node) {
+      const content = this.all(node).join('');
+      return chalk.bold(content);
+    }
+  });
+}
+
+function exitQuiz() {
+  const footer = new inquirer.ui.BottomBar();
+  footer.updateBottomBar(format(
+    '\nThx for using, bye, bye! %s\n',
+    supportsEmoji ? '😃' : ':)'
+  ));
+}
+
 (async () => {
   try {
-    const response = await got(quizUrl);
-    const quizMd = response.body;
-    const quizHtml = await md(quizMd);
-    const $ = cheerio.load(quizHtml);
+    exitHook(() => exitQuiz());
 
-    const questions = getQuestions($);
+    const { body } = await got('en-EN/README.md');
+    const mdtree = remark().parse(body);
+    const questions = getQuestions(mdtree);
 
-    const prompts = new Rx.Subject();
+    const prompts = new Subject();
     const prompt = inquirer.prompt(prompts);
 
     prompts.next(getQuestionPrompt(questions));
-
-    const onEachAnswer = (prevPrompt) => {
-      console.info(prevPrompt.answer);
-      if (prevPrompt.name !== CONTINUE_PROMPT.name) return prompts.next(CONTINUE_PROMPT);
-      return !prevPrompt.answer
-        ? exitQuiz(prompts)
-        : prompts.next(getQuestionPrompt(questions));
-    };
-    prompt.ui.process.subscribe(onEachAnswer);
+    prompt.ui.process.subscribe(prevPrompt => {
+      if (prevPrompt.name !== continuePrompt.name) {
+        console.log(prevPrompt.answer);
+        return prompts.next(continuePrompt);
+      }
+      return prevPrompt.answer
+        ? prompts.next(getQuestionPrompt(questions))
+        : prompts.complete();
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error.stack);
+    process.exit(1);
   }
 })();
 
+function remark(options = {}) {
+  return unified()
+    .use(require('remark-parse'), options)
+    .freeze();
+}
+
+function rehype(options = {}) {
+  return unified()
+    .use(require('rehype-parse'), options)
+    .freeze();
+}
+
 function sample(array) {
   const randomIndex = Math.floor(Math.random() * array.length);
-  return array.splice(randomIndex, 1)[0] || {};
+  const item = array.splice(randomIndex, 1)[0];
+  item.index = randomIndex;
+  return item;
+}
+
+function toString(tree) {
+  return unified()
+    .use(require('remark-stringify'))
+    .use(stringify)
+    .stringify(tree);
 }
