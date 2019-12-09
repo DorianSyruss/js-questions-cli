@@ -17,7 +17,7 @@
     "type": "git",
     "url": "git://github.com/DorianSyruss/js-quiz-cli.git"
   },
-  "license": "ISC",
+  "license": "MIT",
   "author": "DorianSyruss",
   "files": [
     "src"
