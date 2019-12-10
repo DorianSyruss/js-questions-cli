@@ -2,46 +2,59 @@
   "name": "js-questions-cli",
   "version": "1.0.4",
   "description": "Scraped js questions to CLI",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "keywords": [
+    "cli",
+    "javascript",
+    "js",
+    "questions",
+    "quiz"
+  ],
+  "homepage": "https://github.com/DorianSyruss/js-questions-cli#readme",
+  "bugs": {
+    "url": "https://github.com/DorianSyruss/js-questions-cli/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/DorianSyruss/js-quiz-cli.git"
+    "url": "git://github.com/DorianSyruss/js-questions-cli.git"
   },
-  "keywords": [
-    "JS",
-    "questions",
-    "CLI",
-    "quiz",
-    "javascript"
-  ],
-  "bin": {
-    "jsme": "./src/index.js"
-  },
+  "license": "MIT",
   "author": "DorianSyruss",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/DorianSyruss/js-quiz-cli/issues"
+  "files": [
+    "src"
+  ],
+  "main": "src/index.js",
+  "bin": {
+    "jsme": "src/index.js"
   },
-  "homepage": "https://github.com/DorianSyruss/js-quiz-cli#readme",
-  "devDependencies": {
-    "eslint": "^6.2.0",
-    "eslint-config-semistandard": "^15.0.0",
-    "eslint-config-standard": "^13.0.1",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^9.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.0"
+  "scripts": {
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "config": {
+    "prefixUrl": "https://raw.githubusercontent.com/lydiahallie/javascript-questions/master/"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
-    "got": "^9.6.0",
+    "cardinal": "^2.1.1",
+    "chalk": "^3.0.0",
+    "exit-hook": "^2.2.0",
     "inquirer": "^7.0.0",
-    "lodash.filter": "^4.6.0",
-    "lodash.isempty": "^4.4.0",
-    "remarked": "^0.1.4",
-    "rxjs": "^6.5.3"
+    "ky": "^0.16.1",
+    "ky-universal": "^0.3.0",
+    "rehype-parse": "^6.0.2",
+    "remark-parse": "^7.0.2",
+    "remark-stringify": "^7.0.4",
+    "rxjs": "^6.5.3",
+    "unified": "^8.4.2",
+    "wrap-ansi": "^6.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.7.2",
+    "eslint-config-semistandard": "^15.0.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
   }
 }
