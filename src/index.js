@@ -4,9 +4,9 @@ const { prefixUrl } = require('../package.json').config;
 
 const cardinal = require('cardinal');
 const chalk = require('chalk');
+const client = require('ky-universal').extend({ prefixUrl });
 const exitHook = require('exit-hook');
 const { format } = require('util');
-const client = require('ky-universal').extend({ prefixUrl });
 const inquirer = require('inquirer');
 const { Subject } = require('rxjs');
 const unified = require('unified');
